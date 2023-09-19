@@ -108,7 +108,10 @@ export default function NavBar() {
                 >
                   Sign Out
                 </Link>
-                <Link className="inline-block w-full px-4 py-2 flex justify-center text-center text-white bg-gray-600 rounded-md shadow hover:bg-gray-800">
+                <Link
+                  to="/cart"
+                  className="inline-block w-full px-4 py-2 flex justify-center text-center text-white bg-gray-600 rounded-md shadow hover:bg-gray-800"
+                >
                   <BsFillCartCheckFill />
                 </Link>
               </div>
@@ -140,7 +143,10 @@ export default function NavBar() {
               >
                 Sign Out
               </Link>
-              <Link className="px-4 py-2 text-white bg-gray-600 rounded-md shadow hover:bg-gray-800">
+              <Link
+                to="/cart"
+                className="px-4 py-2 text-white bg-gray-600 rounded-md shadow hover:bg-gray-800"
+              >
                 <BsFillCartCheckFill size={"24px"} />
               </Link>
             </div>
