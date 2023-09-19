@@ -4,7 +4,7 @@ const Form = ({ title, type, placeholder, pattern, handleChange, value }) => {
   return (
     <div>
       <div>
-        <label class="block  mb-2 text-sm font-medium text-gray-900 dark:text-white">
+        <label class="block mb-3 text-sm font-medium text-gray-900 dark:text-white">
           {placeholder}
         </label>
         <input
