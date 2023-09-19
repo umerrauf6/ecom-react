@@ -1,20 +1,27 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { allSpecialProducts, selectCount } from "../features/slice";
+import { useNavigate, useParams } from "react-router-dom";
+import { addToCart, allSpecialProducts, selectCount } from "../features/slice";
+import Alert from "../components/Alert";
 const ProductDetailPage = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { specialProducts } = useSelector(selectCount);
+  const { specialProducts, user, showAlert } = useSelector(selectCount);
   const { id } = useParams();
   var detailedProduct = "";
   useEffect(() => {
     if (!specialProducts) {
       dispatch(allSpecialProducts());
     }
-  }, [specialProducts]);
+  }, []);
 
   if (specialProducts)
     detailedProduct = specialProducts.find((product) => id === product._id);
+
+  const addProductToCart = () => {
+    if (user) dispatch(addToCart(detailedProduct, user.id));
+    else navigate("/signin");
+  };
   return (
     <>
       {specialProducts ? (
@@ -46,9 +53,13 @@ const ProductDetailPage = () => {
               SKU: <span className="font-bold">{id}</span>
             </p>
             <hr className="my-4" />
-            <button className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded">
+            <button
+              onClick={() => addProductToCart()}
+              className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded"
+            >
               Add to Cart
             </button>
+            {showAlert && <Alert />}
           </div>
         </div>
       ) : (

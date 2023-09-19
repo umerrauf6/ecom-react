@@ -11,8 +11,8 @@ const initialState = {
   isLoading: false,
   alertText: "",
   alertType: "",
-  specialProducts: "",
-  cart: "",
+  specialProducts: [],
+  cart: [],
 };
 
 function addUserToLocalStorage({ user, token }) {
@@ -28,7 +28,42 @@ export const logoutUser = () => async (dispatch) => {
   removeUserFromLocalStorage();
 };
 
-export const addToCart = () => async (dispatch) => {};
+export const showCart = () => async (dispatch) => {
+  try {
+    const { data } = await axios.get("/api/getAllCart", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    dispatch(setCart(data));
+    // console.log(data);
+  } catch (error) {
+    console.log(error);
+    // dispatch(logoutUsertoMenu());
+    // removeUserFromLocalStorage();
+  }
+};
+
+export const addToCart = (product, customerID) => async (dispatch) => {
+  try {
+    await axios.post("/api/addToCart", {
+      productID: product._id,
+      productName: product.productName,
+      price: product.price,
+      productImage: product.productImage,
+      createdBy: customerID,
+    });
+    dispatch(productAddToCartSuccessfull());
+    setTimeout(() => {
+      dispatch(clearAlert());
+    }, 3000);
+  } catch (error) {
+    console.log(error);
+    setTimeout(() => {
+      dispatch(clearAlert());
+    }, 3000);
+  }
+};
 
 export const allSpecialProducts = () => async (dispatch) => {
   try {
@@ -36,9 +71,6 @@ export const allSpecialProducts = () => async (dispatch) => {
     dispatch(getSpecialProducts(data));
   } catch (error) {
     console.log(error);
-    setTimeout(() => {
-      dispatch(clearAlert());
-    }, 3000);
   }
 };
 export const uploadProduct = (productData) => async (dispatch) => {
@@ -112,6 +144,21 @@ export const stateSlice = createSlice({
   name: "state",
   initialState,
   reducers: {
+    setCart: (state, action) => {
+      return {
+        ...state,
+        cart: action.payload,
+      };
+    },
+    productAddToCartSuccessfull: (state) => {
+      return {
+        ...state,
+        showAlert: true,
+        alertText: "product is Added to Cart",
+        alertType: "success",
+        isLoading: true,
+      };
+    },
     getSpecialProducts: (state, action) => {
       return {
         ...state,
@@ -195,6 +242,7 @@ export const stateSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
+  setCart,
   loginUserBegin,
   loginUserSuccess,
   clearAlert,
@@ -204,6 +252,7 @@ export const {
   registerUserBegin,
   RegisterUserSuccess,
   getSpecialProducts,
+  productAddToCartSuccessfull,
 } = stateSlice.actions;
 export const selectCount = (state) => state.counter;
 

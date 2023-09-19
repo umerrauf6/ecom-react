@@ -2,6 +2,8 @@ const express = require("express");
 const Router = express.Router();
 const Customer = require("../models/CustomerModel");
 const Product = require("../models/ProductSchema");
+const Cart = require("../models/CartModel");
+const auth = require("../middleware/auth");
 
 Router.post("/signup", async (req, res) => {
   // var { name, email, password, access } = req.body;
@@ -32,14 +34,43 @@ Router.post("/signin", async (req, res) => {
     const isMatch = await user.validatePassword(password);
     if (!isMatch) return res.status(401).json({ msg: "Password not Match" });
     const token = await user.generateJWT();
+
     res.json({
       user: {
+        id: user._id,
         email: user.email,
         name: user.name,
         access: user.access,
       },
       token,
     });
+  } catch (error) {
+    console.log(error);
+    res.json({ Error: error });
+  }
+});
+Router.get("/getAllCart", auth, async (req, res) => {
+  try {
+    const userId = req.user.userID;
+    const data = await Cart.find({ createdBy: userId });
+    res.json(data);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+Router.post("/addToCart", async (req, res) => {
+  try {
+    const { productID, productName, price, productImage, createdBy } = req.body;
+    const newCart = new Cart({
+      productID,
+      productName,
+      price,
+      productImage,
+      createdBy,
+    });
+    await newCart.save();
+    res.json({ msg: "Product Upload Succesfull" });
   } catch (error) {
     console.log(error);
     res.json({ Error: error });
