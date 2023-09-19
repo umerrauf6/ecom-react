@@ -10,7 +10,7 @@ const ProductDetailPage = () => {
   const { id } = useParams();
   var detailedProduct = "";
   useEffect(() => {
-    if (!specialProducts) {
+    if (specialProducts.length === 0) {
       dispatch(allSpecialProducts());
     }
   }, []);
@@ -24,42 +24,65 @@ const ProductDetailPage = () => {
   };
   return (
     <>
-      {specialProducts ? (
-        <div className="mt-8 px-4 mx-auto lg:max-w-7xl md:px-8 flex">
-          <div className="flex-1 h-[50vh] relative overflow-hidden">
-            <img
-              className="w-full h-full object-cover transition-transform transform hover:scale-110"
-              src={detailedProduct.productImage}
-              alt=""
-            />
-          </div>
-          <div className="flex-1 ml-4">
-            <div className="mb-4">
-              <h1 className="text-3xl font-bold">
-                {detailedProduct.productName}
-              </h1>
-              <div className="mt-2">
-                <h5 className="text-lg">${detailedProduct.price}</h5>
+      {specialProducts.length !== 0 ? (
+        <div class="bg-gray-100 py-8">
+          <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row -mx-4">
+              <div class="md:flex-1 px-4">
+                <div class="h-[460px] rounded-lg bg-gray-300 mb-4">
+                  <img
+                    class="w-full h-full object-cover"
+                    src={detailedProduct.productImage}
+                    alt="Product Image"
+                  />
+                </div>
+                <div class="flex -mx-2 mb-4">
+                  <div class="w-full px-2">
+                    <button
+                      onClick={() => addProductToCart()}
+                      class="w-full bg-gray-900 text-white py-2 px-4 rounded-full font-bold hover:bg-gray-800"
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
+                {showAlert && <Alert />}
+              </div>
+              <div class="md:flex-1 px-4">
+                <h2 class="text-2xl font-bold mb-2">
+                  {detailedProduct.productName}
+                </h2>
+                <p class="text-gray-600 text-sm mb-4">
+                  {detailedProduct.productDescription}
+                </p>
+                <div class="flex mb-4">
+                  <div class="mr-4">
+                    <span class="font-bold text-gray-700">Price:</span>
+                    <span class="text-gray-600">${detailedProduct.price}</span>
+                  </div>
+                  <div>
+                    <span class="font-bold text-gray-700">Availability:</span>
+                    <span class="text-gray-600">In Stock</span>
+                  </div>
+                </div>
+
+                <div>
+                  <span class="font-bold text-gray-700">
+                    Product Description:
+                  </span>
+                  <p class="text-gray-600 text-sm mt-2">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+                    sed ante justo. Integer euismod libero id mauris malesuada
+                    tincidunt. Vivamus commodo nulla ut lorem rhoncus aliquet.
+                    Duis dapibus augue vel ipsum pretium, et venenatis sem
+                    blandit. Quisque ut erat vitae nisi ultrices placerat non
+                    eget velit. Integer ornare mi sed ipsum lacinia, non
+                    sagittis mauris blandit. Morbi fermentum libero vel nisl
+                    suscipit, nec tincidunt mi consectetur.
+                  </p>
+                </div>
               </div>
             </div>
-            <p className="text-gray-700">
-              {detailedProduct.productDescription}
-            </p>
-            <p className="mt-2">
-              Availability:{" "}
-              <span className="text-green-700 font-bold">IN STOCK</span>
-            </p>
-            <p>
-              SKU: <span className="font-bold">{id}</span>
-            </p>
-            <hr className="my-4" />
-            <button
-              onClick={() => addProductToCart()}
-              className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded"
-            >
-              Add to Cart
-            </button>
-            {showAlert && <Alert />}
           </div>
         </div>
       ) : (
