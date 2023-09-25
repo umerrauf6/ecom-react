@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { bag } from "../assets";
+import React, { useEffect } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { allSpecialProducts, selectCount } from "../features/slice";
 import { Link } from "react-router-dom";
@@ -12,7 +10,7 @@ const SpecialProducts = () => {
   const { specialProducts } = useSelector(selectCount);
   useEffect(() => {
     dispatch(allSpecialProducts());
-  }, [specialProducts]);
+  }, []);
 
   const responsive = {
     superLargeDesktop: {
@@ -38,13 +36,9 @@ const SpecialProducts = () => {
     <div className="mt-5 w-full bg-white rounded p-[1rem]">
       <h1 className="text-slate-300 text-[2rem] ">Flash Sales</h1>
       <Carousel responsive={responsive}>
-        {specialProducts ? (
+        {specialProducts.length !== 0 ? (
           specialProducts.map((product) => (
-            <Link
-              to={`/product/${product._id}`}
-              key={product._id}
-              className="rounded cursor-pointer hover:shadow-2xl"
-            >
+            <Link to={`/product/${product._id}`} key={product._id} className="">
               <div className="h-[200px]">
                 <img
                   className="w-full h-full object-cover"

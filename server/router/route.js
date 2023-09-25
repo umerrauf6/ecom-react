@@ -3,12 +3,11 @@ const Router = express.Router();
 const Customer = require("../models/CustomerModel");
 const Product = require("../models/ProductSchema");
 const Cart = require("../models/CartModel");
+const Wishlist = require("../models/WishlistModel");
+const Checkout = require("../models/CheckoutModel");
 const auth = require("../middleware/auth");
 
 Router.post("/signup", async (req, res) => {
-  // var { name, email, password, access } = req.body;
-  // if (!access) access = "customer";
-  // console.log(name, email, password, access);
   try {
     var { name, email, password, access } = req.body;
     if (!access) access = "customer";
@@ -49,14 +48,70 @@ Router.post("/signin", async (req, res) => {
     res.json({ Error: error });
   }
 });
-Router.get("/getAllCart", auth, async (req, res) => {
+Router.get("/getorders", async (req, res) => {
+  try {
+    const response = await Checkout.find();
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    res.json({ Error: error });
+  }
+});
+
+Router.post("/postCheckout", auth, async (req, res) => {
   try {
     const userId = req.user.userID;
-    const data = await Cart.find({ createdBy: userId });
+    const { productsArray, shippingAddress, price } = req.body;
+    const newCheckout = new Checkout({
+      products: productsArray,
+      userID: userId,
+      customerAddress: shippingAddress,
+      totalPrice: price,
+    });
+    const response = await newCheckout.save();
+    // console.log(response);
+    res.status(200).json({ response });
+  } catch (error) {
+    console.log(error);
+    res.json({ Error: error });
+  }
+});
+
+Router.get("/getAllWishlist", auth, async (req, res) => {
+  try {
+    const userId = req.user.userID;
+    const data = await Wishlist.find({ createdBy: userId });
     res.json(data);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+Router.get("/getAllCart", auth, async (req, res) => {
+  try {
+    const userId = req.user.userID;
+    const data = await Cart.find({ createdBy: userId });
+    res.status("200").json(data);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+Router.post("/addToWishlist", async (req, res) => {
+  try {
+    const { productID, productName, price, productImage, createdBy } = req.body;
+    const newWishlist = new Wishlist({
+      productID,
+      productName,
+      price,
+      productImage,
+      createdBy,
+    });
+    await newWishlist.save();
+    res.json({ msg: "Added to Wishlist" });
+  } catch (error) {
+    console.log(error);
+    res.json({ Error: error });
   }
 });
 Router.post("/addToCart", async (req, res) => {

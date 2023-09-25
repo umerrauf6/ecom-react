@@ -13,6 +13,7 @@ const initialState = {
   alertType: "",
   specialProducts: [],
   cart: [],
+  wishlist: [],
 };
 
 function addUserToLocalStorage({ user, token }) {
@@ -28,22 +29,84 @@ export const logoutUser = () => async (dispatch) => {
   removeUserFromLocalStorage();
 };
 
-export const showCart = () => async (dispatch) => {
+export const postCheckOut =
+  (productsArray, shippingAddress, price) => async (dispatch) => {
+    try {
+      dispatch(setCheckoutBegin());
+      // console.log(productsArray, shippigAddress, price);
+      const { data } = await axios.post(
+        "/api/postCheckout",
+        {
+          productsArray,
+          shippingAddress,
+          price,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${initialState.token}`,
+          },
+        }
+      );
+      dispatch(setCheckoutSuccess());
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+export const showWishlist = () => async (dispatch) => {
   try {
-    const { data } = await axios.get("/api/getAllCart", {
+    dispatch(setWishlistBegin());
+
+    const { data } = await axios.get("/api/getAllWishlist", {
       headers: {
-        Authorization: `Bearer ${token}`,
+        authorization: `Bearer ${initialState.token}`,
       },
     });
-    dispatch(setCart(data));
+    dispatch(setWishlistSuccess(data));
     // console.log(data);
   } catch (error) {
     console.log(error);
-    // dispatch(logoutUsertoMenu());
-    // removeUserFromLocalStorage();
+    dispatch(logoutUsertoMenu());
+    removeUserFromLocalStorage();
+  }
+};
+export const showCart = () => async (dispatch) => {
+  try {
+    dispatch(setCartBegin());
+
+    const { data } = await axios.get("/api/getAllCart", {
+      headers: {
+        authorization: `Bearer ${initialState.token}`,
+      },
+    });
+    dispatch(setCartSuccess(data));
+  } catch (error) {
+    console.log(error);
+    dispatch(logoutUsertoMenu());
+    removeUserFromLocalStorage();
   }
 };
 
+export const addToWishlist = (product, customerID) => async (dispatch) => {
+  try {
+    await axios.post("/api/addToWishlist", {
+      productID: product._id,
+      productName: product.productName,
+      price: product.price,
+      productImage: product.productImage,
+      createdBy: customerID,
+    });
+    dispatch(productAddToWishlistSuccessfull());
+    setTimeout(() => {
+      dispatch(clearAlert());
+    }, 3000);
+  } catch (error) {
+    console.log(error);
+    setTimeout(() => {
+      dispatch(clearAlert());
+    }, 3000);
+  }
+};
 export const addToCart = (product, customerID) => async (dispatch) => {
   try {
     await axios.post("/api/addToCart", {
@@ -77,7 +140,7 @@ export const uploadProduct = (productData) => async (dispatch) => {
   try {
     dispatch(uploadProductBegin());
     console.log(productData);
-    const { data } = await axios.post("api/uploadproduct", {
+    await axios.post("api/uploadproduct", {
       productName: productData.productName,
       price: parseInt(productData.price),
       discount: parseInt(productData.discountPrice),
@@ -100,7 +163,7 @@ export const registerUser = (memberData) => async (dispatch) => {
   try {
     dispatch(registerUserBegin());
 
-    const { data } = await axios.post("api/signup", {
+    await axios.post("api/signup", {
       name: memberData.name,
       email: memberData.email,
       password: memberData.password,
@@ -144,10 +207,51 @@ export const stateSlice = createSlice({
   name: "state",
   initialState,
   reducers: {
-    setCart: (state, action) => {
+    setCheckoutBegin: (state) => {
       return {
         ...state,
+        isLoading: true,
+      };
+    },
+    setCheckoutSuccess: (state) => {
+      return {
+        ...state,
+        isLoading: false,
+      };
+    },
+    setWishlistSuccess: (state, action) => {
+      return {
+        ...state,
+        isLoading: false,
+        wishlist: action.payload,
+      };
+    },
+    setWishlistBegin: (state, action) => {
+      return {
+        ...state,
+        isLoading: true,
+      };
+    },
+    setCartSuccess: (state, action) => {
+      return {
+        ...state,
+        isLoading: false,
         cart: action.payload,
+      };
+    },
+    setCartBegin: (state) => {
+      return {
+        ...state,
+        isLoading: true,
+      };
+    },
+    productAddToWishlistSuccessfull: (state) => {
+      return {
+        ...state,
+        showAlert: true,
+        alertText: "product is Added to Wishlist",
+        alertType: "success",
+        isLoading: true,
       };
     },
     productAddToCartSuccessfull: (state) => {
@@ -242,7 +346,8 @@ export const stateSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
-  setCart,
+  setCartBegin,
+  setCartSuccess,
   loginUserBegin,
   loginUserSuccess,
   clearAlert,
@@ -253,6 +358,11 @@ export const {
   RegisterUserSuccess,
   getSpecialProducts,
   productAddToCartSuccessfull,
+  productAddToWishlistSuccessfull,
+  setWishlistBegin,
+  setWishlistSuccess,
+  setCheckoutSuccess,
+  setCheckoutBegin,
 } = stateSlice.actions;
 export const selectCount = (state) => state.counter;
 

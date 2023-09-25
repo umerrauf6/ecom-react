@@ -1,9 +1,17 @@
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
 import { NavBar } from "./components";
-import { Home, Login, ProductDetailPage, Signup } from "./pages";
+import {
+  AdminOrders,
+  Cart,
+  Checkout,
+  Home,
+  Login,
+  ProductDetailPage,
+  Signup,
+  Wishlist,
+} from "./pages";
 import AdminPanel from "./pages/AdminPanel";
-import Cart from "./pages/Cart";
 
 function App() {
   return (
@@ -17,6 +25,9 @@ function App() {
         <Route path="adminPanel" element={<AdminPanel />} />
         <Route path="product/:id" element={<ProductDetailPage />} />
         <Route path="cart" element={<Cart />} />
+        <Route path="wishlist" element={<Wishlist />} />
+        <Route path="checkout" element={<Checkout />} />
+        <Route path="adminOrders" element={<AdminOrders />} />
       </Routes>
     </div>
   );

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { logoutUser, selectCount } from "../features/slice";
 import { BsFillCartCheckFill } from "react-icons/bs";
+import { AiOutlineHeart } from "react-icons/ai";
 
 export default function NavBar() {
   const [navbar, setNavbar] = useState(false);
@@ -114,6 +115,12 @@ export default function NavBar() {
                 >
                   <BsFillCartCheckFill />
                 </Link>
+                <Link
+                  to="/wishlist"
+                  className="inline-block w-full px-4 py-2 flex justify-center text-center text-white bg-gray-600 rounded-md shadow hover:bg-gray-800"
+                >
+                  <AiOutlineHeart />
+                </Link>
               </div>
             ) : (
               <div className="mt-3 space-y-2 md:hidden ">
@@ -148,6 +155,12 @@ export default function NavBar() {
                 className="px-4 py-2 text-white bg-gray-600 rounded-md shadow hover:bg-gray-800"
               >
                 <BsFillCartCheckFill size={"24px"} />
+              </Link>
+              <Link
+                to="/wishlist"
+                className="px-4 py-2 text-white bg-gray-600 rounded-md shadow hover:bg-gray-800"
+              >
+                <AiOutlineHeart size={"24px"} />
               </Link>
             </div>
           </div>

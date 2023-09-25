@@ -1,7 +1,12 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { addToCart, allSpecialProducts, selectCount } from "../features/slice";
+import {
+  addToCart,
+  addToWishlist,
+  allSpecialProducts,
+  selectCount,
+} from "../features/slice";
 import Alert from "../components/Alert";
 const ProductDetailPage = () => {
   const navigate = useNavigate();
@@ -13,13 +18,17 @@ const ProductDetailPage = () => {
     if (specialProducts.length === 0) {
       dispatch(allSpecialProducts());
     }
-  }, []);
+  });
 
   if (specialProducts)
     detailedProduct = specialProducts.find((product) => id === product._id);
 
   const addProductToCart = () => {
     if (user) dispatch(addToCart(detailedProduct, user.id));
+    else navigate("/signin");
+  };
+  const addProductToWishlist = () => {
+    if (user) dispatch(addToWishlist(detailedProduct, user.id));
     else navigate("/signin");
   };
   return (
@@ -33,16 +42,24 @@ const ProductDetailPage = () => {
                   <img
                     class="w-full h-full object-cover"
                     src={detailedProduct.productImage}
-                    alt="Product Image"
+                    alt="Product"
                   />
                 </div>
                 <div class="flex -mx-2 mb-4">
-                  <div class="w-full px-2">
+                  <div class="w-1/2 px-2">
                     <button
                       onClick={() => addProductToCart()}
                       class="w-full bg-gray-900 text-white py-2 px-4 rounded-full font-bold hover:bg-gray-800"
                     >
                       Add to Cart
+                    </button>
+                  </div>
+                  <div class="w-1/2 px-2">
+                    <button
+                      onClick={() => addProductToWishlist()}
+                      class="w-full bg-gray-900 text-white py-2 px-4 rounded-full font-bold hover:bg-gray-800"
+                    >
+                      Wishlist
                     </button>
                   </div>
                 </div>
